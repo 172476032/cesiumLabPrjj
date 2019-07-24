@@ -3,57 +3,72 @@ import grids from '../../../../static/jsons/floodAll';
 export default {
   data() {
     return {
-      speed: 2000,
+      speed: 1500,
       timeInterval: null,
       sortGroupGrids: null,
       waterEntities: null,
-      colors1: {
-        1: "#A6FF00",
-        2: "#82F630",
-        3: "#52F13A",
-        4: "#1DEC40",
-        5: "#22DE31",
-        6: "#33CD32"
-      },
-      colors: {
-        1: "rgba(166,255,0,0.4)",
-        2: "rgba(130,246,48,0.4)",
-        3: "rgba(82,241,58,0.4)",
-        4: "rgba(29,236,64,0.4)",
-        5: "rgba(34,222,49,0.4)",
-        6: "rgba(51,205,50,0.4)"
-      }
+      // arrivalIndex: 0
     };
   },
-  computed: {},
+  computed: {
+    arrivalIndex() {
+      return this.$store.state.map.arrivalIndex
+    },
+    colors() {
+      return this.$store.state.map.floodingColors;
+    }
+  },
   methods: {
     replayFlooding() {
-      //删除primitives
-      this.Viewer.scene.primitives.removeAll();
-      //清楚计时器
-      window.clearInterval(this.timeInterval)
+      this.reset();
       this.intervalSetting(this.sortGroupGrids)
     },
     beginFlooding() {
-      console.log('grids: ', grids);
-      this.sortGroupGrids = this.praseData(grids.features);
-      console.log('sortGroupGrids: ', this.sortGroupGrids);
       if (this.sortGroupGrids) {
         this.intervalSetting(this.sortGroupGrids)
       }
     },
-    endFlooding() {},
+    pauseFlooding() {
+      //清楚计时器
+      window.clearInterval(this.timeInterval)
+    },
+    toggle(name) {
+      console.log('name: ', name);
+      if (name == "openFloodPanel") {
+        console.log("打开推演面板")
+        if (!this.sortGroupGrids) {
+          //解析数据
+          console.log('grids: ', grids);
+          this.sortGroupGrids = this.praseData(grids.features);
+          console.log('sortGroupGrids: ', this.sortGroupGrids);
+          this.$store.state.map.sortGroupGridsLength = this.sortGroupGrids.length
+        }
+        this.floodShow = true;
+        this.flyTo();
+      } else if (name == "closeFloodPanel") {
+        this.floodShow = false;
+        this.reset()
+      }
+    },
     intervalSetting(sortGroupGrids) {
-      let arrivalIndex = 0;
       this.timeInterval = setInterval(() => {
-        if (arrivalIndex == sortGroupGrids.length) { //sortGroupGrids.length - 1
+        if (this.arrivalIndex == sortGroupGrids.length) { //sortGroupGrids.length - 1
           window.clearInterval(this.timeInterval)
         } else {
-          this.drawPrimitives(sortGroupGrids[arrivalIndex])
-          console.log('sortGroupGrids[arrivalIndex]: ', sortGroupGrids[arrivalIndex]);
+          this.drawPrimitives(sortGroupGrids[this.arrivalIndex])
+          console.log('sortGroupGrids[arrivalIndex]: ', sortGroupGrids[this.arrivalIndex]);
+          this.$store.state.map.arrivalIndex++;
         }
-        arrivalIndex++;
+        console.log("正在播放哦哦哦")
       }, this.speed);
+    },
+    reset() {
+      //删除primitives
+      this.Viewer.scene.primitives.removeAll();
+      //清楚计时器
+      window.clearInterval(this.timeInterval)
+      this.$store.state.map.arrivalIndex = 0;
+      this.Viewer.camera.zoomIn(0.005)
     },
     praseData(data) {
       let sort = _.groupBy(_.sortBy(data, (o) => {
@@ -75,7 +90,7 @@ export default {
       let instanceArray = [];
       features.forEach(v => {
         let id = v.properties.GridID,
-          color = this.colors[v.properties.color],
+          color = this.colors[v.properties.color]["color"],
           // color = "#FF0000",
           degreesArry = [];
         if (v.geometry.type == 'MultiPolygon') {
@@ -119,6 +134,21 @@ export default {
           )
         }
       });
+    },
+    flyTo() {
+      this.Viewer.camera.flyTo({
+        //目前为大通湖东分洪区
+        destination: new Cesium.Cartesian3(
+          -2160719.0887458995,
+          5164693.134828525,
+          3086652.583725703
+        ),
+        orientation: {
+          heading: 6.265965412948017,
+          pitch: -0.7250628417712202,
+          roll: 0.00007361600306232674
+        }
+      })
     },
     draw(features) {
       features.forEach(v => {

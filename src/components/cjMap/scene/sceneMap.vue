@@ -1,8 +1,20 @@
 <template>
   <div class="scene-3d-map-wrap">
     <div id="sceneMap"></div>
-    <flooding-deduction @beginFlooding="beginFlooding"
-                        @endFlooding="endFlooding"
+    <Dropdown class="flood-dropdown"
+              @on-click="toggle">
+      <Button type="primary">
+        洪水推演
+        <Icon type="ios-arrow-down"></Icon>
+      </Button>
+      <DropdownMenu slot="list">
+        <DropdownItem name="openFloodPanel">推演</DropdownItem>
+        <DropdownItem name="closeFloodPanel">关闭</DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+    <flooding-deduction v-if="floodShow"
+                        @beginFlooding="beginFlooding"
+                        @pauseFlooding="pauseFlooding"
                         @replayFlooding="replayFlooding"></flooding-deduction>
   </div>
 </template>
@@ -32,6 +44,7 @@ export default {
         enableCompassOuterRing: false
       },
       payLoad: null,
+      floodShow: false,
       Viewer: null,
       delayInitTime: 3000,
       terrain30: "/cesiumlab/terrain/sxjj/tiff30",
@@ -447,6 +460,11 @@ export default {
     position: absolute;
     top: 50px;
     left: 50px;
+  }
+  .flood-dropdown {
+    position: absolute;
+    right: 88%;
+    top: 40px;
   }
 }
 </style>

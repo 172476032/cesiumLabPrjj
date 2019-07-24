@@ -111,6 +111,42 @@ const createFullPoints = (hoverLayer, clickLayer) => {
 export default {
   state: {
     map: init2Map(),
+    arrivalIndex: 0,
+    sortGroupGridsLength: 0,
+    floodingColorsHtml: {
+      1: "#A6FF00",
+      2: "#82F630",
+      3: "#52F13A",
+      4: "#1DEC40",
+      5: "#22DE31",
+      6: "#33CD32"
+    },
+    floodingColors: { //由浅入深
+      1: {
+        name: "<0.5m  ",
+        color: "rgba(166,255,0,0.4)"
+      },
+      2: {
+        name: "0.5~1.0m",
+        color: "rgba(130,246,48,0.4)"
+      },
+      3: {
+        name: "1.0~1.5m",
+        color: "rgba(82,241,58,0.4)"
+      },
+      4: {
+        name: "1.5~2.0m",
+        color: "rgba(29,236,64,0.4)"
+      },
+      5: {
+        name: "2.5~5.0m",
+        color: "rgba(34,222,49,0.4)"
+      },
+      6: {
+        name: ">5.0m",
+        color: "rgba(51,205,50,0.4)"
+      }
+    },
     hoverLayer: hoverLayer,
     clickLayer: clickLayer,
     hoverFullPoint: hoverFullPoint,
