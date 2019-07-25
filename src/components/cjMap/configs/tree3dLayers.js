@@ -30,7 +30,7 @@ export default [{
     "geoType": "polygon",
     "layerName": "heduannew",
     "visible": false,
-    "layerUrl": "/map172166/rest/services/heduan/MapServer/tile/{z}/{y}/{x}",
+    "layerUrl": "/map172166/rest/services/heduan_new/MapServer/tile/{z}/{y}/{x}",
     "queryConfig": {
       "name": "河段",
       "url": "/map172166/rest/services/heduan/MapServer/identify",
